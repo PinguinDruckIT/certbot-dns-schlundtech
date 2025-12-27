@@ -7,6 +7,7 @@ try:
 except ImportError:
     from urllib2 import Request, urlopen, HTTPError, URLError
 
+import pyotp
 import zope.interface
 from certbot import errors
 from certbot import interfaces
@@ -87,7 +88,8 @@ class _SchlundtechGatewayClient:
             'context': self.context,
         }
         if self.token is not None:
-            result['token'] = self.token
+            totp = pyotp.TOTP(self.token)
+            result['token'] = totp.now()
         return result
 
     def _call(self, task):
